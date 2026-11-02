@@ -2336,18 +2336,7 @@ fn main() -> color_eyre::Result<()> {
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "-h" | "-?" | "--help" => {
-                let settings = Config::builder()
-                    .add_source(config::File::from(
-                        match config {
-                            Some(c) => c,
-                            None => {
-                                let cfg = ProjectDirs::from("", "",  &program).unwrap().config_dir().join("config.toml");
-                                if !cfg.is_file() {panic!("\"{}\" is not a file or doesn't exists. Download the default config.toml from https://github.com/itabesamesa/minesweeper_4d_rs", cfg.to_str().unwrap());}
-                                cfg.to_path_buf()
-                            }
-                        }))
-                    .build()
-                    .unwrap();
+                let settings = load_settings(config.clone());
                 let controls = MinesweeperGame::get_controls(
                     &config_keymap_global(settings.get_table("keymap").unwrap()),
                     &config_keymap_movement(settings.get_table("keymap.movement").unwrap()),
@@ -2474,18 +2463,7 @@ fn main() -> color_eyre::Result<()> {
             }
         }
     }
-    let settings = Config::builder()
-        .add_source(config::File::from(
-            match config {
-                Some(c) => c,
-                None => {
-                    let cfg = ProjectDirs::from("", "",  &program).unwrap().config_dir().join("config.toml");
-                    if !cfg.is_file() {panic!("\"{}\" is not a file or doesn't exists. Download the default config.toml from https://github.com/itabesamesa/minesweeper_4d_rs", cfg.to_str().unwrap());}
-                    cfg.to_path_buf()
-                }
-            }))
-        .build()
-        .unwrap();
+    let settings = load_settings(config);
     color_eyre::install()?;
     let terminal = ratatui::init();
     let result = App::new(
@@ -3049,4 +3027,23 @@ impl App {
     fn quit(&mut self) {
         self.running = false;
     }
+}
+
+/// The settings: the file given with --config, else the user's own
+/// config.toml in the config directory, else the defaults built in.
+/// The directory is named for the game, not for argv[0], so it is the
+/// same however the game is started.
+fn load_settings(config: Option<PathBuf>) -> config::Config {
+    const DEFAULT: &str = include_str!("../config.toml");
+    let path = config.or_else(|| {
+        ProjectDirs::from("", "", "minesweeper_4d")
+            .map(|d| d.config_dir().join("config.toml"))
+            .filter(|p| p.is_file())
+    });
+    let builder = Config::builder().add_source(config::File::from_str(DEFAULT, config::FileFormat::Toml));
+    let builder = match path {
+        Some(p) => builder.add_source(config::File::from(p)),
+        None => builder,
+    };
+    builder.build().unwrap()
 }
