@@ -1,3 +1,13 @@
+> **Play it with Asciiverse.** With [av](https://asciiverse.sh), the Asciiverse
+> client:
+>
+> ```
+> av install minesweeper-4d
+> av play minesweeper-4d
+> ```
+>
+> The original README follows.
+
 # minesweeper_4d
 
 This is a [Ratatui] app and my 8th minesweeper variant, 7th multidimensional one (assuming all the ones I abandoned where at least supposed to be 4D), 4th public and 2nd (excluding the 3 abandoned ones) 4D one.
