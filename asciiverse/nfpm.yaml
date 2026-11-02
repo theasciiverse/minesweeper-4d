@@ -1,0 +1,39 @@
+# System packages (.deb, .rpm, .apk, Arch) for 4D Minesweeper, built by
+# nfpm from the same static binary as the av archive. The release workflow
+# sets VERSION, RELEASE (our packaging release) and ARCH (amd64 or arm64),
+# and puts the binary at stage/minesweeper_4d.
+#
+# The package is minesweeper-4d (Debian names take no underscore); the
+# command keeps upstream's name, minesweeper_4d. No .desktop file on
+# purpose: av is the one place titles are started from, so Asciiverse
+# packages never add menu entries (asciiverse/CLAUDE.md).
+name: minesweeper-4d
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+release: ${RELEASE}
+section: games
+priority: optional
+maintainer: Asciiverse <packages@asciiverse.sh>
+vendor: Asciiverse
+homepage: https://github.com/theasciiverse/minesweeper-4d
+license: MIT
+description: |
+  Minesweeper in four dimensions, in the terminal.
+  Find the mines in a 4x4x4x4 field: every cell touches up to 80
+  neighbours across x, y, z and w, highlighted around the cursor. Delta
+  mode, sweep mode and marks help you think in 4D. By itabesamesa,
+  packaged by Asciiverse.
+contents:
+  - src: stage/minesweeper_4d
+    dst: /usr/bin/minesweeper_4d
+    file_info: { mode: 0755 }
+  - src: LICENSE
+    dst: /usr/share/doc/minesweeper-4d/copyright
+    file_info: { mode: 0644 }
+  - src: README.md
+    dst: /usr/share/doc/minesweeper-4d/README.md
+    file_info: { mode: 0644 }
+  - src: config.toml
+    dst: /usr/share/doc/minesweeper-4d/config.toml
+    file_info: { mode: 0644 }
